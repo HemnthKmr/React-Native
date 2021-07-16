@@ -20,8 +20,10 @@ export default function ContactsList() {
         const { data } = await Contacts.getContactsAsync();
 
         if (data.length > 0) {
-          const contact = data;
-          setContacts(contact);
+          const sortedData = data.sort((a, b) =>
+            a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+          );
+          setContacts(sortedData);
         }
       }
     })();
@@ -69,7 +71,7 @@ export default function ContactsList() {
           ) : null;
         }}
         numColumns={1}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => index.toString()}
       />
     </View>
   ) : (

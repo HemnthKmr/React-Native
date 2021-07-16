@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Text,
   View,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -28,6 +30,7 @@ export default function QRScanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(BarCodeScanner.Constants.Type.back);
   const [scanned, setScanned] = useState(false);
+  const [showScan, setShowScan] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -50,14 +53,14 @@ export default function QRScanner() {
         y <= viewMinY + finderHeight / 2
       ) {
         setScanned(true);
-
+        setShowScan(false);
         alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       }
     }
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return <ActivityIndicator size="large" />;
   }
 
   if (hasPermission === false) {
@@ -79,48 +82,58 @@ export default function QRScanner() {
           QR Scanner
         </Text>
       </View>
-      <BarCodeScanner
-        onBarCodeScanned={handleBarCodeScanned}
-        type={type}
-        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-        style={[StyleSheet.absoluteFillObject, styles.container]}
-      >
-        <View
-          style={{
-            flex: 1,
-
-            backgroundColor: "transparent",
-
-            flexDirection: "row",
-          }}
+      {showScan ? (
+        <BarCodeScanner
+          onBarCodeScanned={handleBarCodeScanned}
+          type={type}
+          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+          style={[StyleSheet.absoluteFillObject, styles.container]}
         >
-          <TouchableOpacity
+          <View
             style={{
               flex: 1,
-
-              alignItems: "flex-end",
-            }}
-            onPress={() => {
-              setType(
-                type === BarCodeScanner.Constants.Type.back
-                  ? BarCodeScanner.Constants.Type.front
-                  : BarCodeScanner.Constants.Type.back
-              );
+              backgroundColor: "transparent",
+              flexDirection: "row",
             }}
           >
-            <Text style={{ fontSize: 18, margin: 5, color: "white" }}>
-              {" "}
-              Flip{" "}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                alignItems: "flex-end",
+              }}
+              onPress={() => {
+                setType(
+                  type === BarCodeScanner.Constants.Type.back
+                    ? BarCodeScanner.Constants.Type.front
+                    : BarCodeScanner.Constants.Type.back
+                );
+              }}
+            >
+              <Text style={{ fontSize: 18, margin: 5, color: "white" }}>
+                {" "}
+                Flip{" "}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <BarcodeMask edgeColor="#62B1F6" showAnimatedLine />
+          <Button
+            title="Stop Scan"
+            onPress={() => {
+              setShowScan(false);
+            }}
+          ></Button>
+        </BarCodeScanner>
+      ) : (
+        <View>
+          <Button
+            title="Scan Again"
+            onPress={() => {
+              setScanned(false);
+              setShowScan(true);
+            }}
+          />
         </View>
-
-        <BarcodeMask edgeColor="#62B1F6" showAnimatedLine />
-
-        {scanned && (
-          <Button title="Scan Again" onPress={() => setScanned(false)} />
-        )}
-      </BarCodeScanner>
+      )}
     </View>
   );
 }
