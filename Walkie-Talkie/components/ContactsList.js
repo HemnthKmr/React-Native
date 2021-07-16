@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
@@ -32,6 +33,7 @@ export default function ContactsList() {
 
   return contacts && contacts.length > 0 ? (
     <View style={styles.container}>
+      <StatusBar translucent={false} style="light" />
       <View>
         <Text
           style={{
@@ -61,7 +63,7 @@ export default function ContactsList() {
                     {item.phoneNumbers[0].number}
                   </ListItem.Subtitle>
                 </ListItem.Content>
-                <ListItem.Chevron />
+                {/* <ListItem.Chevron /> */}
               </ListItem>
             </TouchableHighlight>
           ) : null;

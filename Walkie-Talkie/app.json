@@ -23,14 +23,13 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.hemnthkmr.WalkieTalkie"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "androidStatusBar": {
-      "translucent": false
-    },
-    "description": "Walkie Talkie Application"
+    "description": "Walkie Talkie Application",
+    "githubUrl": "https://github.com/HemnthKmr/React-Native/tree/main/Walkie-Talkie"
   }
 }
