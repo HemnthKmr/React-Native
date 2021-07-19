@@ -1,15 +1,9 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useRef } from "react";
 import { Input, Button } from "react-native-elements";
 import { View, Text } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { AuthContext } from "../context";
 
-export default function Login() {
+export default function Signup() {
   const inputFocus = useRef(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const { signIn } = useContext(AuthContext);
 
   useEffect(() => {
     inputFocus.current.focus();
@@ -28,7 +22,6 @@ export default function Login() {
         backgroundColor: "white",
       }}
     >
-      <StatusBar translucent={false} style="light" />
       <Input
         ref={inputFocus}
         placeholder="Enter Email"
@@ -37,7 +30,6 @@ export default function Login() {
           name: "mail-outline",
         }}
         leftIconContainerStyle={{ paddingRight: 10 }}
-        onChangeText={setUsername}
       />
       <Input
         placeholder="Enter Password"
@@ -45,27 +37,11 @@ export default function Login() {
         rightIcon={{ type: "materialIcons", name: "visibility" }}
         secureTextEntry={true}
         leftIconContainerStyle={{ paddingRight: 10 }}
-        onChangeText={setPassword}
       />
-      <View
-        style={{
-          paddingBottom: 20,
-          marginLeft: 10,
-          alignSelf: "flex-start",
-        }}
-      >
-        <Text style={{ color: "gray" }}>
-          Not a User?
-          <Text style={{ color: "blue" }} onPress={handlePress}>
-            {" "}
-            Register Now
-          </Text>
-        </Text>
-      </View>
 
       <Button
         type="solid"
-        title="Sign In"
+        title="Sign Up"
         titleStyle={{ color: "white" }}
         // icon={{
         //   type: "materialIcons",
@@ -79,7 +55,6 @@ export default function Login() {
           paddingRight: 50,
           marginTop: 30,
         }}
-        onPress={signIn}
       />
     </View>
   );

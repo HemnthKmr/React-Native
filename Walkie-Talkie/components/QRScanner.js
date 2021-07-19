@@ -121,7 +121,7 @@ export default function QRScanner() {
             onPress={() => {
               setShowScan(false);
             }}
-          ></Button>
+          />
         </BarCodeScanner>
       ) : (
         <View>
