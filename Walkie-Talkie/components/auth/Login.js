@@ -3,6 +3,7 @@ import { Input, Button } from "react-native-elements";
 import { View, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { AuthContext } from "../context";
+import { data } from "../../Data/LoginData";
 
 export default function Login() {
   const inputFocus = useRef(null);
@@ -19,6 +20,12 @@ export default function Login() {
     console.log("Register Clicked");
   };
 
+  const loginValidation = () => {
+    const user = data.find((element) => element.email == username);
+    if (user != undefined) {
+      user.password == password ? signIn() : null;
+    }
+  };
   return (
     <View
       style={{
@@ -79,7 +86,7 @@ export default function Login() {
           paddingRight: 50,
           marginTop: 30,
         }}
-        onPress={signIn}
+        onPress={loginValidation}
       />
     </View>
   );

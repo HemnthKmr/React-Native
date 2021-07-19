@@ -8,6 +8,7 @@ import QRScanner from "./components/QRScanner";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import Profile from "./components/auth/Profile";
+import Chat from "./components/Chat";
 import { ActivityIndicator, View } from "react-native";
 import { AuthContext } from "./components/context";
 
@@ -97,6 +98,7 @@ export default function App() {
             }}
           >
             <Tab.Screen name="Contacts" component={ContactStackScreen} />
+            <Tab.Screen name="Chat" component={Chat} />
             <Tab.Screen name="QRScanner" component={QRScanner} />
             <Tab.Screen name="Profile" component={Profile} />
           </Tab.Navigator>
