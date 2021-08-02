@@ -9,12 +9,14 @@ import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import Profile from "./components/auth/Profile";
 import Chat from "./components/Chat";
+import AudioPage from "./components/AudioPage";
 import { ActivityIndicator, View } from "react-native";
 import { AuthContext } from "./components/context";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const ContactsStack = createStackNavigator();
+const AudioStack = createStackNavigator();
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -72,6 +74,26 @@ export default function App() {
     );
   };
 
+  const AudioStackScreen = () => {
+    return (
+      <AudioStack.Navigator>
+        <AudioStack.Screen
+          name="Recording"
+          component={AudioPage}
+          options={{
+            headerStyle: {
+              backgroundColor: "black",
+            },
+            headerTintColor: "#fff",
+            headerTitleStyle: {
+              fontStyle: "normal",
+            },
+          }}
+        />
+      </AudioStack.Navigator>
+    );
+  };
+
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
@@ -100,6 +122,7 @@ export default function App() {
             <Tab.Screen name="Contacts" component={ContactStackScreen} />
             <Tab.Screen name="Chat" component={Chat} />
             <Tab.Screen name="QRScanner" component={QRScanner} />
+            <Tab.Screen name="Audio" component={AudioStackScreen} />
             <Tab.Screen name="Profile" component={Profile} />
           </Tab.Navigator>
         ) : (
