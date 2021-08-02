@@ -70,7 +70,7 @@ export default function QRScanner() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar translucent={false} style="light" />
-      <View>
+      {/* <View>
         <Text
           style={{
             fontSize: 25,
@@ -81,7 +81,7 @@ export default function QRScanner() {
         >
           QR Scanner
         </Text>
-      </View>
+      </View> */}
       {showScan ? (
         <BarCodeScanner
           onBarCodeScanned={handleBarCodeScanned}
