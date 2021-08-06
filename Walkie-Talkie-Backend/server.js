@@ -1,23 +1,39 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const server = require("http").createServer(app);
-const PORT = process.env.PORT || 5000;
-// var corsOptions = {
-//   cors: true,
-// };
-const io = require("socket.io")(server, { cors: true });
-// const cors = require("cors");
+var cors = require('cors')
+const server = require('http').Server(app)
 
-// app.use(cors(corsOptions));
+const {ExpressPeerServer} = require('peer');
 
-io.on("connection", (socket) => {
-  console.log("a user connected :D");
-  socket.on("chat message", (msg) => {
-    console.log(msg);
-    io.emit("chat message", msg);
-  });
-});
+const customGenerationFunction = () => (Math.random().toString(36) + "0000000000000000000").substr(2, 16);
 
-server.listen(PORT, () => {
-  console.log(`Server running at port ${PORT}`);
-});
+const peerServer = ExpressPeerServer(server)
+
+const io = require('socket.io')(server,{
+  debug: true,
+  path: '/',
+  generateClientId: customGenerationFunction,
+})
+
+app.use('/mypeer', peerServer)
+
+var corsOptions = {
+  origin: "http://localhost:8081"
+};
+
+app.use(cors(corsOptions))
+
+app.get('/', (req,res) => {
+  res.send({ Welcome :"Welcome to walkie-Talkie"});
+})
+
+io.on('connection', (socket) => {
+  socket.on('join-room', (roomId, userId) => {
+    console.log(roomId, userId)
+    socket.join(roomId);
+    socket.to(roomId)
+    socket.broadcast.emit('user-connected', userId)
+  })
+})
+
+server.listen(3000, ()=> console.log(`Server running on port 3000`));
