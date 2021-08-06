@@ -64,7 +64,7 @@ const App = () => {
     return (
       <HomeStack.Navigator>
         <HomeStack.Screen
-          name="Home"
+          name="HomePage"
           component={Home}
           options={{
             headerStyle: {
