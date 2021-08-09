@@ -12,7 +12,7 @@ import {
 import io from 'socket.io-client';
 import Peer from 'react-native-peerjs';
 const socket = io('http://127.0.0.1:3000');
-
+let roomId;
 
 const Room = () => {
 
@@ -20,88 +20,86 @@ const Room = () => {
   const [streams, setStreams] = useState([])
   const [remoteStreams, setRemoteStreams] = useState([])
 
-  console.log(streams);
-
   const route = useRoute();
-  let roomId = route.params.roomId;
+  roomId = route.params.RoomId;
 
   const peerServer = new Peer(undefined, {
     host: '127.0.0.1',
     secure: false,
     port: 3000,
     path: '/mypeer'
-  })  
-
-  
-  socket.on('user-connected', (userId) => {
-    console.log('User connected:' + userId)
-    connecttoNewUser(userId, stream)
   })
 
-  peerServer.on('open', (userId) => {
-    socket.emit('join-room', roomId, userId);
-  })
+  let isFront = false;
+  mediaDevices.enumerateDevices().then(sourceInfos => {
+  let videoSourceId;
+  for (let i = 0; i < sourceInfos.length; i++) {
+  if(sourceInfos[i].kind == "videoinput" && sourceInfos[i].facing == (isFront ? "front" : "environment")) {
+     videoSourceId = sourceInfos[i].deviceId;
+  }
+}
 
-   peerServer.on('call', (call) => {
-    call.answer(stream);
-
-    call.on('stream', (stream) => {
-      console.log(stream)
-      setStreams([...streams,stream])
-    })
-  })
+mediaDevices.getUserMedia({
+  audio: true,
+  // video: {
+  //   width: 640,
+  //   height: 480,
+  //   frameRate: 30,
+  //   facingMode: (isFront ? "user" : "environment"),
+  //   deviceId: videoSourceId
+  // }
+  video: false
+})
+.then(stream => {
+  setMyStream(stream)
+})
+.catch(error => {
+  console.log(error)
+});
+})
 
   peerServer.on('error', console.log)
+  
+  useEffect(() => {
+    peerServer.on('open', (userId) => {
+      socket.emit('join-room', roomId, userId);
+    })
+  },[])
 
-  const connecttoNewUser = (userId, stream) => {
-    const call = peerServer.call(userId, stream);
+  socket.on('user-connected', (userId) => {
+    console.log('User-Connected' + userId);
+    connecttoNewUser(userId, myStream)
+  })
 
-    call.on('stream', (remoteVideoStream) => {
-      if(remoteVideoStream){
+  peerServer.on('call', (call) => {
+    call.answer(myStream);
+    console.log("answered")
+    call.on('myStream', (myStream) => {
+      console.log("answered YES")
+      setStreams([...streams,myStream])
+    })
+  })
+    
+  const connecttoNewUser = (userId, myStream, peerServer) => {
+    var call = peerServer.call(userId, myStream)
+   
+    call.on('myStream', (remoteVideoStream) => {
+      console.log("remoteVideoStream")
+      if (remoteVideoStream) {
+        console.log("remoteVideoStream YES")
         setRemoteStreams(remoteVideoStream);
       }
     })
-}
-
-  useEffect(() => {
-    let isFront = false;
-    mediaDevices.enumerateDevices().then(sourceInfos => {
-    console.log(sourceInfos);
-    let videoSourceId;
-    for (let i = 0; i < sourceInfos.length; i++) {
-    if(sourceInfos[i].kind == "videoinput" && sourceInfos[i].facing == (isFront ? "front" : "environment")) {
-       videoSourceId = sourceInfos[i].deviceId;
-    }
   }
 
-  console.log(videoSourceId);
-  mediaDevices.getUserMedia({
-    audio: true,
-    video: {
-      width: 640,
-      height: 480,
-      frameRate: 30,
-      facingMode: (isFront ? "user" : "environment"),
-      deviceId: videoSourceId
-    }
-    // video: false
+  socket.on('user-disconnected', (userId) => {
+    console.log("User Disconnected" + userId)
   })
-  .then(stream => {
-    setMyStream(stream);
-  })
-  .catch(error => {
-    console.log(error)
-  });
-});
 
-
-  },[])
-
-  
   return (
     <View style={{flex:1, justifyContent: 'flex-start', padding: 10}}>
       <View style={{flex: 1,justifyContent: "center",height: 200, borderColor: 'yellow',borderWidth: 4}}>
-      {(myStream) ? <RTCView streamURL={myStream.toURL()} style={{height: 200}}/> : console.log(myStream)}
+      {(myStream) ? <RTCView streamURL={myStream.toURL()} style={{height: 140}}/> : null}
       </View>
       <FAB
         title=""
@@ -119,7 +117,13 @@ const Room = () => {
       })
       : null}
       </View>
-       
+        <View style={{flex: 1,justifyContent: "center",height: 300, borderColor: 'blue',borderWidth: 4}}>
+        {(streams.length > 0) ?
+       streams.map((stream) => {
+        <RTCView streamURL={stream.toURL()} style={{height: 300}}/>
+      })
+      : null}
+      </View>
     </View>
   );
 };
